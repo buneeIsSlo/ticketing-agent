@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import { blue, green, redBright } from "yoctocolors";
 import userRoutes from "./routes/user";
+import ticketRoutes from "./routes/ticket";
+
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -15,6 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", userRoutes);
+app.use("/api/ticket", ticketRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)
