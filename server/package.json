@@ -4,7 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "node index.js"
+    "dev": "nodemon index.js",
+    "inngest-dev": "npx inngest-cli@latest dev"
   },
   "keywords": [],
   "author": "",

@@ -2,8 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import { blue, green, redBright } from "yoctocolors";
-import userRoutes from "./routes/user";
-import ticketRoutes from "./routes/ticket";
+import userRoutes from "./routes/user.js";
+import ticketRoutes from "./routes/ticket.js";
 
 import dotenv from "dotenv";
 
@@ -28,3 +28,7 @@ mongoose
     );
   })
   .catch((err) => console.error(redBright("MongoDB error: "), err));
+
+app.get("/", (req, res) => {
+  res.send("Server up lfg ✅");
+});

@@ -1,4 +1,4 @@
-import { inngest } from "../client";
+import { inngest } from "../client.js";
 import { redBright } from "yoctocolors";
 import User from "../../models/user.js";
 import { NonRetriableError } from "inngest";

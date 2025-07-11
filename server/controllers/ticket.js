@@ -1,4 +1,4 @@
-import { inngest } from "inngest";
+import { inngest } from "../inngest/client.js";
 import Ticket from "../models/ticket.js";
 import { redBright } from "yoctocolors";
 
