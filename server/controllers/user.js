@@ -1,12 +1,13 @@
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { inngest } from "../inngest/client.js";
 
 export const signup = async (req, res) => {
   const { email, password, skills = [] } = req.body;
 
   try {
-    const hashedPassword = bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({ email, password: hashedPassword, skills });
 
     // Fire an inngest event
@@ -20,7 +21,10 @@ export const signup = async (req, res) => {
       process.env.JWT_SECRET
     );
 
-    res.json({ user, token });
+    res.json({
+      user: { _id: user._id, email: user.email, role: user.role },
+      token,
+    });
   } catch (error) {
     res.status(500).json({ error: "Signup failed", details: error.message });
   }
@@ -30,7 +34,7 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = User.findOne({ email });
+    const user = await User.findOne({ email }).select("_id email role");
     if (!user) return res.status(401).json({ error: "User not found" });
 
     const passwordsMatch = await bcrypt.compare(password, user.password);

@@ -5,22 +5,30 @@ import { Label } from "../components/ui/label";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useState } from "react";
 
-const schema = z
-  .object({
-    email: z.email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirm: z.string().min(6, "Password must be at least 6 characters"),
-  })
-  .refine((data) => data.password === data.confirm, {
-    message: "Passwords do not match",
-    path: ["confirm"],
-  });
+const schema = z.object({
+  email: z.email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 type LoginForm = z.infer<typeof schema>;
 
+type LoginResponse = {
+  user: {
+    _id: string;
+    email: string;
+    role: string;
+    // add more fields if needed
+  };
+  token: string;
+};
+
 export default function Login() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const {
     register,
     handleSubmit,
@@ -29,9 +37,33 @@ export default function Login() {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: LoginForm) => {
-    // handle login
-    console.log(data);
+  const onSubmit = async (data: LoginForm) => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: data.email, password: data.password }),
+        }
+      );
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || err.message || "Login failed");
+      }
+      const result: LoginResponse = await res.json();
+      localStorage.setItem("user", JSON.stringify(result.user));
+      localStorage.setItem("token", result.token);
+      navigate("/");
+    } catch (e) {
+      let msg = "Login failed";
+      if (e instanceof Error) msg = e.message;
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,8 +85,9 @@ export default function Login() {
               <p className="text-red-500 text-xs">{errors.password.message}</p>
             )}
           </div>
-          <Button type="submit" className="w-full">
-            Login
+          {error && <p className="text-red-500 text-xs text-center">{error}</p>}
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </Button>
         </form>
         <div className="mt-4 text-center text-sm">

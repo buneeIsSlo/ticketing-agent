@@ -5,22 +5,14 @@ import { Label } from "../components/ui/label";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useState } from "react";
 
 const schema = z
   .object({
-    email: z
-      .string()
-      .nonempty("Email is required")
-      .email("Invalid email address"),
-    password: z
-      .string()
-      .nonempty("Password is required")
-      .min(6, "Password must be at least 6 characters"),
-    confirm: z
-      .string()
-      .nonempty("Please confirm your password")
-      .min(6, "Password must be at least 6 characters"),
+    email: z.email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirm: z.string().min(6, "Password must be at least 6 characters"),
   })
   .refine((data) => data.password === data.confirm, {
     message: "Passwords do not match",
@@ -29,7 +21,19 @@ const schema = z
 
 type SignupForm = z.infer<typeof schema>;
 
+type SignupResponse = {
+  user: {
+    _id: string;
+    email: string;
+    role: string;
+  };
+  token: string;
+};
+
 export default function Signup() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const {
     register,
     handleSubmit,
@@ -38,9 +42,33 @@ export default function Signup() {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: SignupForm) => {
-    // handle signup
-    console.log(data);
+  const onSubmit = async (data: SignupForm) => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/api/auth/signup`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: data.email, password: data.password }),
+        }
+      );
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || "Signup failed");
+      }
+      const result: SignupResponse = await res.json();
+      localStorage.setItem("user", JSON.stringify(result.user));
+      localStorage.setItem("token", result.token);
+      navigate("/");
+    } catch (e) {
+      let msg = "Signup failed";
+      if (e instanceof Error) msg = e.message;
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -69,8 +97,9 @@ export default function Signup() {
               <p className="text-red-500 text-xs">{errors.confirm.message}</p>
             )}
           </div>
-          <Button type="submit" className="w-full">
-            Sign Up
+          {error && <p className="text-red-500 text-xs text-center">{error}</p>}
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Signing Up..." : "Sign Up"}
           </Button>
         </form>
         <div className="mt-4 text-center text-sm">
