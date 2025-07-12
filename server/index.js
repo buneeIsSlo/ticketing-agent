@@ -4,6 +4,10 @@ import cors from "cors";
 import { blue, green, redBright } from "yoctocolors";
 import userRoutes from "./routes/user.js";
 import ticketRoutes from "./routes/ticket.js";
+import { serve } from "inngest/express";
+import { inngest } from "./inngest/client.js";
+import { onUserSignUp } from "./inngest/functions/on-signup.js";
+import { onTicketCreated } from "./inngest/functions/on-ticket-create.js";
 
 import dotenv from "dotenv";
 
@@ -18,6 +22,14 @@ app.use(express.json());
 
 app.use("/api/auth", userRoutes);
 app.use("/api/ticket", ticketRoutes);
+
+app.use(
+  "/api/inngest",
+  serve({
+    client: inngest,
+    functions: [onUserSignUp, onTicketCreated],
+  })
+);
 
 mongoose
   .connect(process.env.MONGO_URI)

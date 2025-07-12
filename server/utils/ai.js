@@ -50,7 +50,7 @@ Ticket information:
 - Title: ${ticket.title}
 - Description: ${ticket.description}`);
 
-  const raw = response.output[0].context;
+  const raw = response.output[0].content;
 
   try {
     const match = raw.match(/```json\s*([\s\S]*?)\s*```/i);
@@ -58,7 +58,7 @@ Ticket information:
     return JSON.parse(jsonString);
   } catch (e) {
     console.error(
-      redBright("Failed to parse JSON from AI response") + e.message
+      redBright("Failed to parse JSON from AI response: ") + e.message
     );
     return null;
   }

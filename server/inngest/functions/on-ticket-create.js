@@ -3,6 +3,7 @@ import Ticket from "../../models/ticket.js";
 import User from "../../models/user.js";
 import { NonRetriableError } from "inngest";
 import { sendMail } from "../../utils/mailer.js";
+import analyzeTicket from "../../utils/ai.js";
 import { redBright } from "yoctocolors";
 
 export const onTicketCreated = inngest.createFunction(
@@ -33,7 +34,7 @@ export const onTicketCreated = inngest.createFunction(
             priority: !["low", "medium", "high"].includes(aiResponse.priority)
               ? "medium"
               : aiResponse.priority,
-            helpfulNotes: aiResponse.helpfulNotes,
+            notes: aiResponse.helpfulNotes,
             status: "IN_PROGRESS",
             relatedSkills: aiResponse.relatedSkills,
           });
@@ -55,7 +56,7 @@ export const onTicketCreated = inngest.createFunction(
 
         if (!user) {
           user = await User.findOne({
-            role: "amdin",
+            role: "admin",
           });
         }
 
@@ -72,7 +73,7 @@ export const onTicketCreated = inngest.createFunction(
           await sendMail(
             moderator.email,
             "Ticket Assigned",
-            `A new ticket has been assigned to you ${finalTicket.title}`
+            `A new ticket has been assigned to you: ${finalTicket.title}`
           );
         }
       });
