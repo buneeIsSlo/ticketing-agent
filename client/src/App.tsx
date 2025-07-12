@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 import Login from "./pages/login";
 import Signup from "./pages/signup";
+import Protected from "./components/protected";
 
 export default function App() {
   return (
@@ -9,13 +10,29 @@ export default function App() {
         <Route
           path="/"
           element={
-            <section>
-              <h1 className="text-4xl font-bold">Ticketing Agent</h1>
-            </section>
+            <Protected protectedRoute="true">
+              <section>
+                <h1 className="text-4xl font-bold">Ticketing Agent</h1>
+              </section>
+            </Protected>
           }
         />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/login"
+          element={
+            <Protected protectedRoute="">
+              <Login />
+            </Protected>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <Protected protectedRoute="">
+              <Signup />
+            </Protected>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
