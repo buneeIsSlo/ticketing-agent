@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import TicketList from "../components/ticket-list";
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -111,6 +112,8 @@ export default function Home() {
           </form>
         </Form>
       </Card>
+      <h2 className="text-4xl font-semibold mt-8">All Tickets</h2>
+      <TicketList />
     </section>
   );
 }
