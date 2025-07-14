@@ -4,6 +4,7 @@ import Signup from "./pages/signup";
 import Home from "./pages/home";
 import Protected from "./components/protected";
 import Layout from "./components/layout";
+import TicketDetails from "./pages/ticket";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
           }
         >
           <Route index element={<Home />} />
+          <Route path="/ticket/:id" element={<TicketDetails />} />
         </Route>
         <Route
           path="/login"
