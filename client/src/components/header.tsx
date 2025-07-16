@@ -3,10 +3,11 @@ import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { RoleBadge } from "./role-badge";
 
-type User = {
+export type User = {
   _id: string;
   email: string;
-  role: string;
+  role: "admin" | "user" | "moderator";
+  skills?: string[];
 };
 
 export default function Header() {

@@ -5,6 +5,7 @@ import Home from "./pages/home";
 import Protected from "./components/protected";
 import Layout from "./components/layout";
 import TicketDetails from "./pages/ticket";
+import AdminPage from "./pages/admin";
 
 export default function App() {
   return (
@@ -20,6 +21,14 @@ export default function App() {
         >
           <Route index element={<Home />} />
           <Route path="/ticket/:id" element={<TicketDetails />} />
+          <Route
+            path="/admin"
+            element={
+              <Protected protectedRoute="true" requiredRole="admin">
+                <AdminPage />
+              </Protected>
+            }
+          />
         </Route>
         <Route
           path="/login"

@@ -1,26 +1,39 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router";
 import { Skeleton } from "./ui/skeleton";
+import type { User } from "./header";
 
 interface ProtectedProps {
   children: ReactNode;
   protectedRoute: string;
+  requiredRole?: string;
 }
 
 export default function Protected({
   children,
   protectedRoute,
+  requiredRole,
 }: ProtectedProps) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
+    const userStr = localStorage.getItem("user");
+    let user: User | undefined = undefined;
+    try {
+      user = userStr ? JSON.parse(userStr) : undefined;
+    } catch {
+      /* ignore */
+    }
 
     if (protectedRoute) {
       if (!token || !user) {
         navigate("/login");
+        return;
+      }
+      if (requiredRole && user?.role !== requiredRole) {
+        navigate("/");
         return;
       }
     } else {
@@ -30,7 +43,7 @@ export default function Protected({
       }
     }
     setLoading(false);
-  }, [navigate, protectedRoute]);
+  }, [navigate, protectedRoute, requiredRole]);
 
   if (loading) {
     return (
