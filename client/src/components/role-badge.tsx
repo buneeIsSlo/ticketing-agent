@@ -10,11 +10,10 @@ const roleColors: Record<
   "default" | "secondary" | "destructive" | "outline"
 > = {
   admin: "destructive",
-  user: "default",
+  user: "outline",
   agent: "secondary",
-  manager: "outline",
   support: "secondary",
-  moderator: "outline",
+  moderator: "secondary",
 };
 
 export function RoleBadge({ role, className }: RoleBadgeProps) {
