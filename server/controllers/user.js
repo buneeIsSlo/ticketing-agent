@@ -86,7 +86,7 @@ export const updateUser = async (req, res) => {
       { skills: skills.length ? skills : user.skills, role }
     );
 
-    return res.jons({ message: "User info updated successfully" });
+    return res.json({ message: "User info updated successfully" });
   } catch (error) {
     res.status(500).json({ error: "Updated filed", details: error.message });
   }
@@ -97,6 +97,9 @@ export const getUsers = async (req, res) => {
     if (req.user.role !== "admin") {
       return res.status(403).json({ error: "Forbidden" });
     }
+
+    const users = await User.find().select("-password");
+    return res.json(users);
   } catch (error) {
     res
       .status(500)
