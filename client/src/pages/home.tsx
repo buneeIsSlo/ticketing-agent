@@ -13,8 +13,9 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TicketList from "../components/ticket-list";
+import type { Ticket } from "../hooks/useTicketPolling";
 
 const schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -24,9 +25,41 @@ const schema = z.object({
 type TicketForm = z.infer<typeof schema>;
 
 export default function Home() {
-  const [loading, setLoading] = useState(false);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(
+          `${import.meta.env.VITE_SERVER_URL}/api/ticket`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.message || "Failed to fetch tickets");
+        }
+        const data = await res.json();
+        setTickets(data);
+      } catch (e) {
+        let msg = "Failed to fetch tickets";
+        if (e instanceof Error) msg = e.message;
+        setError(msg);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTickets();
+  }, []);
 
   const form = useForm<TicketForm>({
     resolver: zodResolver(schema),
@@ -57,7 +90,9 @@ export default function Home() {
         throw new Error(err.message || "Failed to create ticket");
       }
 
+      const result = await res.json();
       setSuccess("Ticket created successfully!");
+      setTickets((prev: Ticket[]) => [result.ticket, ...prev]);
     } catch (e) {
       let msg = "Failed to create ticket";
       if (e instanceof Error) msg = e.message;
@@ -113,7 +148,7 @@ export default function Home() {
         </Form>
       </Card>
       <h2 className="text-4xl font-semibold mt-8">All Tickets</h2>
-      <TicketList />
+      <TicketList tickets={tickets} loading={loading} error={error} />
     </section>
   );
 }

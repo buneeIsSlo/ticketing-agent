@@ -1,53 +1,20 @@
-import { useEffect, useState } from "react";
 import { Card } from "./ui/card";
 import StatusBadge from "./status-badge";
 import { Link } from "react-router";
 import { ListTodo, Loader } from "lucide-react";
+import type { Ticket } from "../hooks/useTicketPolling";
 
-export type Ticket = {
-  _id: string;
-  title: string;
-  description: string;
-  status?: string;
-  createdAt?: string;
-};
+interface TicketListProps {
+  tickets: Ticket[];
+  loading: boolean;
+  error: string;
+}
 
-export default function TicketList() {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const fetchTickets = async () => {
-      setLoading(true);
-      setError("");
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(
-          `${import.meta.env.VITE_SERVER_URL}/api/ticket`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.message || "Failed to fetch tickets");
-        }
-        const data = await res.json();
-        setTickets(data);
-      } catch (e) {
-        let msg = "Failed to fetch tickets";
-        if (e instanceof Error) msg = e.message;
-        setError(msg);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTickets();
-  }, []);
-
+export default function TicketList({
+  tickets,
+  loading,
+  error,
+}: TicketListProps) {
   if (loading)
     return (
       <div className="py-4 w-full">
