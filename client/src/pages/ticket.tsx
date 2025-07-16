@@ -13,6 +13,7 @@ import {
 } from "../components/ui/accordion";
 import StatusBadge from "@/components/status-badge";
 import { useTicketPolling } from "@/hooks/useTicketPolling";
+import ReactMarkdown from "react-markdown";
 
 export default function TicketDetails() {
   const { id } = useParams();
@@ -71,7 +72,9 @@ export default function TicketDetails() {
             </p>
             <p>
               <b>Helpful notes:</b>{" "}
-              {ticket.notes ?? (
+              {ticket.notes ? (
+                <ReactMarkdown>{ticket.notes}</ReactMarkdown>
+              ) : (
                 <span className="italic text-muted-foreground">Analyzing…</span>
               )}
             </p>
