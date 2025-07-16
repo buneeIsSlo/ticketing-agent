@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import {
   Card,
@@ -13,50 +12,13 @@ import {
   AccordionContent,
 } from "../components/ui/accordion";
 import StatusBadge from "@/components/status-badge";
-
-interface Ticket {
-  title: string;
-  description: string;
-  status: string;
-  createdAt: string;
-}
+import { useTicketPolling } from "@/hooks/useTicketPolling";
 
 export default function TicketDetails() {
   const { id } = useParams();
-  const [ticket, setTicket] = useState<Ticket | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchTicket = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(
-          `${import.meta.env.VITE_SERVER_URL}/api/ticket/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (!res.ok) throw new Error("Not found");
-        const data = await res.json();
-        setTicket(data.ticket || data);
-      } catch (e) {
-        let msg = "Failed to fetch Ticket details";
-        if (e instanceof Error) msg = e.message;
-        setError(msg);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTicket();
-  }, [id]);
+  const { ticket, loading, error } = useTicketPolling(id);
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
   if (!ticket) return <div>No ticket found.</div>;
 
   return (
@@ -93,9 +55,40 @@ export default function TicketDetails() {
             <p>
               <b>Status:</b> <StatusBadge status={ticket.status} />
             </p>
+            <p>
+              <b>Priority:</b>{" "}
+              {ticket.priority ?? (
+                <span className="italic text-muted-foreground">Analyzing…</span>
+              )}
+            </p>
+            <p>
+              <b>Related skills:</b>{" "}
+              {ticket.relatedSkills && ticket.relatedSkills.length ? (
+                ticket.relatedSkills.join(", ")
+              ) : (
+                <span className="italic text-muted-foreground">Analyzing…</span>
+              )}
+            </p>
+            <p>
+              <b>Helpful notes:</b>{" "}
+              {ticket.notes ?? (
+                <span className="italic text-muted-foreground">Analyzing…</span>
+              )}
+            </p>
+            <p>
+              <b>Assigned to:</b>{" "}
+              {ticket.assignedTo?.email ?? (
+                <span className="italic text-muted-foreground">Assigning…</span>
+              )}
+            </p>
           </div>
         </CardContent>
       </Card>
+      {error && (
+        <div className="mt-4 text-destructive font-semibold text-center">
+          {error}
+        </div>
+      )}
     </section>
   );
 }
