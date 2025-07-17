@@ -17,7 +17,7 @@ import ReactMarkdown from "react-markdown";
 
 export default function TicketDetails() {
   const { id } = useParams();
-  const { ticket, loading, error } = useTicketPolling(id);
+  const { ticket, loading, error, role } = useTicketPolling(id);
 
   if (loading) return <div>Loading...</div>;
   if (!ticket) return <div>No ticket found.</div>;
@@ -56,34 +56,46 @@ export default function TicketDetails() {
             <p>
               <b>Status:</b> <StatusBadge status={ticket.status} />
             </p>
-            <p>
-              <b>Priority:</b>{" "}
-              {ticket.priority ?? (
-                <span className="italic text-muted-foreground">Analyzing…</span>
-              )}
-            </p>
-            <p>
-              <b>Related skills:</b>{" "}
-              {ticket.relatedSkills && ticket.relatedSkills.length ? (
-                ticket.relatedSkills.join(", ")
-              ) : (
-                <span className="italic text-muted-foreground">Analyzing…</span>
-              )}
-            </p>
-            <p>
-              <b>Helpful notes:</b>{" "}
-              {ticket.notes ? (
-                <ReactMarkdown>{ticket.notes}</ReactMarkdown>
-              ) : (
-                <span className="italic text-muted-foreground">Analyzing…</span>
-              )}
-            </p>
-            <p>
-              <b>Assigned to:</b>{" "}
-              {ticket.assignedTo?.email ?? (
-                <span className="italic text-muted-foreground">Assigning…</span>
-              )}
-            </p>
+            {role !== "user" && (
+              <>
+                <p>
+                  <b>Priority:</b>{" "}
+                  {ticket.priority ?? (
+                    <span className="italic text-muted-foreground">
+                      Analyzing…
+                    </span>
+                  )}
+                </p>
+                <p>
+                  <b>Related skills:</b>{" "}
+                  {ticket.relatedSkills && ticket.relatedSkills.length ? (
+                    ticket.relatedSkills.join(", ")
+                  ) : (
+                    <span className="italic text-muted-foreground">
+                      Analyzing…
+                    </span>
+                  )}
+                </p>
+                <p>
+                  <b>Helpful notes:</b>{" "}
+                  {ticket.notes ? (
+                    <ReactMarkdown>{ticket.notes}</ReactMarkdown>
+                  ) : (
+                    <span className="italic text-muted-foreground">
+                      Analyzing…
+                    </span>
+                  )}
+                </p>
+                <p>
+                  <b>Assigned to:</b>{" "}
+                  {ticket.assignedTo?.email ?? (
+                    <span className="italic text-muted-foreground">
+                      Assigning…
+                    </span>
+                  )}
+                </p>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>

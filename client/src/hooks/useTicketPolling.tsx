@@ -20,6 +20,14 @@ export function useTicketPolling(id: string | undefined) {
   const retryCount = useRef(0);
   const MAX_RETRIES = 6; // 6 * 2.5s = 15s
 
+  // Always get role from localStorage
+  const userStr = localStorage.getItem("user");
+  let userRole = "user";
+  if (userStr) {
+    const user = JSON.parse(userStr);
+    userRole = user.role || "user";
+  }
+
   const isComplete = (t: Ticket) =>
     t.priority && t.relatedSkills && t.notes && t.assignedTo;
 
@@ -33,7 +41,6 @@ export function useTicketPolling(id: string | undefined) {
     const fetchTicket = async () => {
       try {
         const token = localStorage.getItem("token");
-
         const res = await fetch(
           `${import.meta.env.VITE_SERVER_URL}/api/ticket/${id}`,
           {
@@ -46,7 +53,8 @@ export function useTicketPolling(id: string | undefined) {
         const data = await res.json();
         setTicket(data.ticket);
 
-        if (!isComplete(data.ticket)) {
+        // Only poll if not a regular user and async fields are incomplete
+        if (userRole !== "user" && !isComplete(data.ticket)) {
           if (!intervalRef.current) {
             intervalRef.current = setInterval(poll, 2500);
           }
@@ -99,11 +107,13 @@ export function useTicketPolling(id: string | undefined) {
         if (!prev) return data.ticket;
         const updated: Ticket = { ...prev };
 
-        // Only update async fields
-        updated.priority = data.ticket.priority;
-        updated.relatedSkills = data.ticket.relatedSkills;
-        updated.notes = data.ticket.notes;
-        updated.assignedTo = data.ticket.assignedTo;
+        // Only update async fields if not a regular user
+        if (userRole !== "user") {
+          updated.priority = data.ticket.priority;
+          updated.relatedSkills = data.ticket.relatedSkills;
+          updated.notes = data.ticket.notes;
+          updated.assignedTo = data.ticket.assignedTo;
+        }
 
         if (isComplete(updated) && intervalRef.current) {
           clearInterval(intervalRef.current);
@@ -117,5 +127,5 @@ export function useTicketPolling(id: string | undefined) {
     }
   };
 
-  return { ticket, loading, error };
+  return { ticket, loading, error, role: userRole };
 }
