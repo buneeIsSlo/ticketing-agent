@@ -7,6 +7,17 @@ import Layout from "./components/layout";
 import TicketDetails from "./pages/ticket";
 import AdminPage from "./pages/admin";
 
+function NotFound() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <h1 className="text-4xl font-bold mb-4">404 - Not Found</h1>
+      <p className="text-muted-foreground">
+        The page you are looking for does not exist.
+      </p>
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -46,6 +57,7 @@ export default function App() {
             </Protected>
           }
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
