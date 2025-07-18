@@ -1,69 +1,80 @@
-# React + TypeScript + Vite
+<div align="center">
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# 🎫 Ticketing Agent
 
-Currently, two official plugins are available:
+A minimal implementation of an AI agent using **Inngest**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![screenshot placeholder](./client/public/preview.png)
 
-## Expanding the ESLint configuration
+</div>
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## ✨ Features
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- AI-powered ticket handling
+- Simple agent workflows
+- Modern UI with React
+- Role-based access
+- Real-time ticket updates
+- Learning-focused codebase
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 🧰 Tech Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Node.js & Express
+- React + Vite
+- Inngest (event-driven workflows)
+- Shadcn UI
+- Zod & React Hook Form
+- MongoDB (via Mongoose)
+- Mailtrap (emails)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Clone the repository
+   ```bash
+   git clone <repo-url>
+   cd ticketing-agent
+   ```
+2. Install dependencies:
+   ```bash
+   cd server && npm install
+   cd ../client && npm install
+   ```
+3. Set up environment variables (see `.env.sample` in client & server)
+4. Start the servers:
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+   ```bash
+   # Terminal 1
+   cd client && npm run dev
+
+   # Terminal 2
+   cd server && npm run dev
+
+   # Terminal 3
+   cd server && npm run inngest-dev
+   ```
+
+5. Open [http://localhost:5173](http://localhost:5173) in your browser(Frontend)
+
+6. Open [http://localhost:8288](http://localhost:8288) in your browser(Inngest runs)
+
+## 🛠️ Development
+
+- Built for learning Inngest and AI agent basics
+- Modular, minimal, and easy to extend
+- Uses Prettier and ESLint for code quality
+
+## 💙 Acknowledgements
+
+- [Inngest](https://www.inngest.com/) for event-driven workflows
+- [Shadcn UI](https://ui.shadcn.com/) for UI components
+- [Zod](https://zod.dev/) & [React Hook Form](https://react-hook-form.com/) for forms
+
+<div align="center">
+
+<strong>⭐ Leave a star maybe? ⭐</strong>
+
+<a href="https://github.com/buneeIsSlo/ticketing-agent">Source</a>
+| <a href="https://twitter.com/awwbhi2" target="_blank">Twitter</a>
+| <a href="https://github.com/buneeIsSlo" target="_blank">GitHub</a>
+
+</div>
